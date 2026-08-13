@@ -4793,8 +4793,7 @@ impl VirtualMachine {
         }
         self.has_terminated = true;
     }
-    /// Prints an uncaught `value` to `writer`; `exception` is its JSC wrapper
-    /// when it was thrown.
+
     pub fn print_exception(
         &mut self,
         value: JSValue,
@@ -6369,8 +6368,7 @@ impl VirtualMachine {
                 }
             }
 
-            // `.errors` is DontEnum (skipped above) and may be deleted, reassigned,
-            // or turned into an accessor; `get_errors_property` is a `getDirect`.
+            // `.errors` is DontEnum (not seen above) and may have been deleted or reassigned.
             if error_instance.is_aggregate_error(global_ref) {
                 const MAX_AGGREGATE_ERRORS_PRINTED: u64 = 100;
                 let errors = error_instance.get_errors_property(global_ref);
@@ -6445,8 +6443,7 @@ impl VirtualMachine {
                 if formatter.failed {
                     break;
                 }
-                // Non-error members are rendered by `formatter.format`, which
-                // tracks them in the same map itself.
+                // `formatter.format` tracks non-error members in this map itself.
                 let is_error = err.is_cell() && err.js_type() == JSType::ErrorInstance;
                 if is_error && bun_core::handle_oom(formatter.map.get_or_put(err)).found_existing {
                     writer.write_all(b"\n")?;
